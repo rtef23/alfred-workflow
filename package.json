@@ -1,0 +1,18 @@
+{
+  "name": "alfred-workflow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "del-cli --force build",
+    "build": "del-cli --force build && babel src -d build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.12",
+    "@babel/preset-env": "^7.20.2",
+    "del-cli": "^5.0.0"
+  }
+}
