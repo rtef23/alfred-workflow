@@ -1,14 +1,16 @@
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 
+const USER_HOME = os.homedir();
 const INTELLIJ_META_DIRECTORY = '.idea';
 const INTELLIJ_META_NAME_FILE = '.idea/.name';
 
 const PATH_SEPARATOR = '/';
 
-const ENCODING = 'UTF-8'
+const ENCODING = 'utf8';
 const PROJECT_ROOT_DIRECTORIES = [
-    '/Users/songjooyoung/private-projects',
+    path.join(USER_HOME, 'private-projects'),
 ];
 
 const query = process.argv[2];
