@@ -36,3 +36,21 @@ $node_directory $workflow_js $query
 
 #### open url
 </details>
+
+<details>
+<summary>kill workflow</summary>
+
+#### keyword filter
+```zsh
+query=$1
+node_directory=$(which node)
+workflow_js=path-to-kill-js
+
+$node_directory $workflow_js $query
+```
+
+#### terminal command
+```zsh
+kill -9 {query}
+```
+</details>
