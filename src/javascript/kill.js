@@ -33,7 +33,7 @@ psList()
             psListProcesses
                 .filter(({ name }) => {
                     if(query){
-                        return name.includes(query);
+                        return name.toLowerCase().includes(query.toLowerCase());
                     }else{
                         return true;
                     }

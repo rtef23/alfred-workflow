@@ -19,7 +19,7 @@ console.log(JSON.stringify({
     items: enumerateProjectDirectories()
         .filter(({ projectName }) => {
             if(query){
-                return projectName.includes(query);
+                return projectName.toLowerCase().includes(query.toLowerCase());
             }else{
                 return true;
             }

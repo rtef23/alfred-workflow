@@ -51,6 +51,6 @@ function searchUrl(query, { url, name }) {
     return {
         url,
         name,
-        isSearchTarget: !query? true : (url.includes(query) || name.includes(query))
+        isSearchTarget: !query? true : (url.toLowerCase().includes(query.toLowerCase()) || name.toLowerCase().includes(query.toLowerCase()))
     };
 }
