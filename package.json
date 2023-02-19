@@ -7,6 +7,7 @@
     "clean": "del-cli --force build",
     "build": "del-cli --force build && babel src -d build"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -14,5 +15,10 @@
     "@babel/core": "^7.20.12",
     "@babel/preset-env": "^7.20.2",
     "del-cli": "^5.0.0"
+  },
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "lodash": "^4.17.21",
+    "ps-list": "^8.1.1"
   }
 }

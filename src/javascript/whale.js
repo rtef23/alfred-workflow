@@ -1,6 +1,6 @@
-const path = require("path");
-const fs = require("fs");
-const os = require("os");
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
 
 const USER_HOME = os.homedir();
 const WHALE_HOME_DIRECTORY = path.join(USER_HOME, 'Library/Application Support/Naver/Whale');

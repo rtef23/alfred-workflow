@@ -1,6 +1,6 @@
-const path = require("path");
-const fs = require("fs");
-const os = require("os");
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
 
 const USER_HOME = os.homedir();
 const INTELLIJ_META_DIRECTORY = '.idea';
