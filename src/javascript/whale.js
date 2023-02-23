@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+import { convertTo } from './lib/util.js';
 
 const USER_HOME = os.homedir();
 const WHALE_HOME_DIRECTORY = path.join(USER_HOME, 'Library/Application Support/Naver/Whale');
@@ -10,7 +11,7 @@ const ENCODING = 'utf8';
 const URL = 'url';
 const FOLDER = 'folder';
 
-const query = process.argv[2];
+const query = convertTo(process.argv[2] || '');
 
 const bookmarkJson = JSON.parse(fs.readFileSync(WHALE_BOOKMARK_FILE, {
     encoding: ENCODING,

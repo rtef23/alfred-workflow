@@ -2,8 +2,9 @@ import psList from 'ps-list';
 import os from 'os';
 import _ from 'lodash';
 import { execSync, exec } from 'child_process';
+import { convertTo } from './lib/util.js';
 
-const query = process.argv[2];
+const query = convertTo(process.argv[2] || '');
 
 psList()
     .then((psListProcesses) => {

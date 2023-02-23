@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+import { convertTo } from './lib/util.js';
 
 const USER_HOME = os.homedir();
 const INTELLIJ_META_DIRECTORY = '.idea';
@@ -13,7 +14,7 @@ const PROJECT_ROOT_DIRECTORIES = [
     path.join(USER_HOME, 'private-projects'),
 ];
 
-const query = process.argv[2];
+const query = convertTo(process.argv[2] || '');
 
 console.log(JSON.stringify({
     items: enumerateProjectDirectories()
