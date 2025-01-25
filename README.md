@@ -4,71 +4,110 @@
 <details>
 <summary>인텔리제이 workflow</summary>
 
-#### keyword filter
+##### keyword filter
 - keyword : ij
 - with space check
 - argument optional
+- /usr/bin/python3
+- with input as argv
 ```zsh
 import os
 import sys
-import subprocess
+import json
+from pathlib import Path
 
-projects_directory = os.path.expanduser("~/Desktop/projects")  # 프로젝트 디렉토리 경로
+USER_HOME = Path.home()
+INTELLIJ_META_DIRECTORY = '.idea'
+INTELLIJ_META_NAME_FILE = '.idea/.name'
+ENCODING = 'utf-8'
+PROJECT_ROOT_DIRECTORIES = [
+    USER_HOME / 'projects',
+]
 
-# 프로젝트 목록을 가져오는 함수
-def get_projects(directory):
+def convert_to(query):
+    return query.strip().lower()
+
+query = convert_to(sys.argv[1] if len(sys.argv) > 1 else '')
+
+def enumerate_project_directories():
     projects = []
-    for root, dirs, files in os.walk(directory):
-        if ".idea" in dirs:  # .idea 디렉토리가 있으면 IntelliJ 프로젝트로 간주
-            projects.append(root)
+    for root_directory in PROJECT_ROOT_DIRECTORIES:
+        if not root_directory.exists():
+            continue
+        
+        for item in root_directory.iterdir():
+            if item.is_dir() and is_intellij_project(item):
+                project_directory = str(item)
+                project_name = get_project_name(item)
+                projects.append({
+                    "projectName": project_name,
+                    "projectDirectory": project_directory
+                })
     return projects
 
-# Alfred용 항목 생성 함수
-def generate_alfred_items(projects):
-    items = []
-    for project in projects:
-        project_name = os.path.basename(project)
-        items.append({
-            'title': project_name,
-            'subtitle': project,
-            'arg': project  # 선택한 프로젝트 경로를 arg로 전달
-        })
-    return items
+def is_intellij_project(project_path):
+    return (project_path / INTELLIJ_META_DIRECTORY).exists()
 
-# Alfred가 입력한 query를 기반으로 프로젝트 목록을 필터링하고 결과 반환
-def main(query):
-    projects = get_projects(projects_directory)
-
-    # 입력된 쿼리가 없으면 알파벳 순으로 정렬 후 상위 10개 프로젝트 선택
-    if not query:
-        # 알파벳 순으로 정렬하고 상위 10개 프로젝트를 가져옵니다
-        projects = sorted(projects, key=lambda p: os.path.basename(p).lower())[:10]
+def get_project_name(project_path):
+    meta_name_file = project_path / INTELLIJ_META_NAME_FILE
+    if meta_name_file.exists():
+        return meta_name_file.read_text(encoding=ENCODING).strip()
     else:
-        # 쿼리에 맞는 프로젝트 필터링
-        projects = [p for p in projects if query.lower() in os.path.basename(p).lower()]
+        return project_path.name
 
-    # 결과를 알프레드에 반환
-    items = generate_alfred_items(projects)
-    print('{"items":' + str(items).replace("'", '"') + '}')
+projects = enumerate_project_directories()
 
-# 선택된 항목을 열기 위한 로직
-if __name__ == "__main__":
-    # Alfred가 'query' 값을 전달하면, 이를 처리하여 결과 반환
-    if len(sys.argv) > 1:
-        query = sys.argv[1]  # query 값은 사용자가 입력한 검색어
-        main(query)
-    else:
-        # 'query'가 없다면 빈 문자열로 처리하여 알파벳 순으로 프로젝트 목록을 반환
-        main("")
+# 검색어 필터 적용
+filtered_projects = [
+    {
+        "uid": project["projectName"],
+        "title": project["projectName"],
+        "arg": project["projectDirectory"]
+    }
+    for project in projects
+    if query in project["projectName"].lower()
+]
+
+# 검색 결과가 없으면 프로젝트 이름 기준 정렬 후 상위 5개 출력
+if not filtered_projects:
+    sorted_projects = sorted(projects, key=lambda p: p["projectName"].lower())[:5]
+    filtered_projects = [
+        {
+            "uid": project["projectName"],
+            "title": project["projectName"],
+            "arg": project["projectDirectory"]
+        }
+        for project in sorted_projects
+    ]
+
+print(json.dumps({"items": filtered_projects}))
 
 ```
 
-#### run script
+##### run script
+- /bin/zsh
+- with input as argv
 ```zsh
-query=$1
-intellij_cli_path=/usr/local/bin/idea
+source ~/.zshrc
 
-$intellij_cli_path $query
+# 전달받은 프로젝트 경로를 변수에 저장
+project_path="{query}"
+
+echo 1
+
+# 'which idea' 명령어로 IntelliJ IDEA의 실행 파일 경로 찾기
+idea_path="/Users/nhn/Library/Application Support/JetBrains/Toolbox/scripts/idea"
+
+echo $idea_path
+
+# idea 명령어 경로가 존재하는지 확인
+if [ -z "$idea_path" ]; then
+    echo "IntelliJ IDEA의 'idea' 명령어를 찾을 수 없습니다. IntelliJ IDEA가 설치되어 있는지 확인하세요."
+    exit 1
+fi
+
+# IntelliJ IDEA를 실행 (idea 명령어를 사용)
+"$idea_path" "$project_path"
 ```
 </details>
 
@@ -76,31 +115,109 @@ $intellij_cli_path $query
 <summary>whale 북마크 workflow</summary>
 
 #### keyword filter
+- argument required
+- /usr/bin/python3
+- with input as argv
 ```zsh
-query=$1
-node_directory=$(which node)
-workflow_js=path-to-builded-whale-js
+import os
+import sys
+import json
+from pathlib import Path
 
-$node_directory $workflow_js $query
+USER_HOME = Path.home()
+WHALE_HOME_DIRECTORY = USER_HOME / 'Library' / 'Application Support' / 'Naver' / 'Whale'
+WHALE_BOOKMARK_FILE = WHALE_HOME_DIRECTORY / 'Profile 1' / 'Bookmarks'
+
+ENCODING = 'utf-8'
+URL = 'url'
+FOLDER = 'folder'
+
+def convert_to(query):
+    return query.strip().lower()
+
+query = convert_to(sys.argv[1] if len(sys.argv) > 1 else '')
+
+# 북마크 JSON 파일 로드
+with open(WHALE_BOOKMARK_FILE, 'r', encoding=ENCODING) as file:
+    bookmark_json = json.load(file)
+
+bookmark_bar = bookmark_json.get('roots', {}).get('bookmark_bar', {})
+
+def search(query, element):
+    element_type = element.get('type')
+
+    if element_type == URL:
+        return search_url(query, element)
+    elif element_type == FOLDER:
+        return search_folder(query, element)
+    else:
+        return []
+
+def search_folder(query, element):
+    children = element.get('children', [])
+    results = []
+    for child in children:
+        results.extend(search(query, child))
+    return results
+
+def search_url(query, element):
+    url = element.get('url', '')
+    name = element.get('name', '')
+    
+    is_search_target = not query or (query in url.lower() or query in name.lower())
+    
+    if is_search_target:
+        return [{
+            "uid": name,
+            "title": name,
+            "arg": url
+        }]
+    return []
+
+filtered_items = search(query, bookmark_bar)
+
+print(json.dumps({"items": filtered_items}, ensure_ascii=False))
+
 ```
 
 #### open url
 </details>
 
 <details>
-<summary>kill workflow</summary>
+<summary>ssh copy workflow</summary>
 
-#### keyword filter
+#### script filter
+- keyword : ssh
+- argument optional
+- placeholder title : Select Group
+- /bin/bash
+- with input as {query}
 ```zsh
-query=$1
-node_directory=$(which node)
-workflow_js=path-to-kill-js
-
-$node_directory $workflow_js $query
+python3 /Users/nhn/projects/alfred-workflow/src/ssh/ssh.py list_groups {query}
 ```
 
-#### terminal command
+#### script filter
+- placeholder title : Select phase
+- /bin/zsh --no-rcs
 ```zsh
-kill -9 {query}
+python3 /Users/nhn/projects/alfred-workflow/src/ssh/ssh.py list_phases {query}
+
 ```
+
+#### script filter
+- placeholder title : Select Server
+- /bin/zsh --no-rcs
+
+```zsh
+python3 /Users/nhn/projects/alfred-workflow/src/ssh/ssh.py list_servers {query}
+```
+
+#### run script
+- /bin/bash
+- with input as {query} 
+
+```zsh
+python3 /Users/nhn/projects/alfred-workflow/src/ssh/ssh.py connect {query}
+```
+
 </details>
