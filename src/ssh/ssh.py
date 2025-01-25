@@ -6,8 +6,28 @@ import subprocess
 JSON_FILE_PATH = "/Users/nhn/projects/alfred-workflow/src/ssh/servers.json"
 
 def load_data():
+    """JSON 데이터를 로드하고 참조를 해석하여 반환"""
     with open(JSON_FILE_PATH, "r") as f:
-        return json.load(f)
+        raw_data = json.load(f)
+
+    common_servers = raw_data.get("common_servers", {})
+    resolved_data = {}
+
+    for group, phases in raw_data.items():
+        if group == "common_servers":
+            continue
+        resolved_data[group] = {}
+        for phase, server_keys in phases.items():
+            if isinstance(server_keys, dict):
+                # 'real' phase와 같이 개별 서버 정보가 직접 포함된 경우
+                resolved_data[group][phase] = server_keys
+            else:
+                # 공통 서버 참조 방식
+                resolved_data[group][phase] = {
+                    key: common_servers[key] for key in server_keys if key in common_servers
+                }
+
+    return resolved_data
 
 def list_groups(query=None):
     """1-depth 그룹 리스트 출력 (키워드 필터링 포함, 기본 10개 그룹 반환)"""
@@ -32,7 +52,7 @@ def list_phases(group_name):
         print(json.dumps({"items": [{"title": f"그룹 '{group_name}'이(가) 존재하지 않습니다.", "arg": ""}]}))
         return
 
-    phases = ["alpha", "beta", "real"]
+    phases = list(data[group_name].keys())
     results = [{"title": phase, "arg": f"{group_name} {phase}"} for phase in phases]
     print(json.dumps({"items": results}, ensure_ascii=False, indent=2))
 

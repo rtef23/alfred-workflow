@@ -186,6 +186,32 @@ print(json.dumps({"items": filtered_items}, ensure_ascii=False))
 <details>
 <summary>ssh copy workflow</summary>
 
+```json
+{
+  "common_servers": {
+    "common-server1": { "host": "common-server1", "ip": "12.34.56.78" },
+    "common-server2": { "host": "common-server2", "ip": "12.34.56.78" }
+  },
+  "project-group-1": {
+    "alpha": ["common-server1"],
+    "beta": ["common-server2"],
+    "real": {
+      "each-server1": { "host": "each-server1", "ip": "12.34.56.789" },
+      "each-server2": { "host": "each-server1", "ip": "12.34.56.789" }
+    }
+  },
+  "project-group-2":{
+    "dev": {
+      "each-server3": { "host": "each-server3", "ip":  "12.34.56.79" },
+      "each-server4": { "host": "each-server4", "ip":  "12.34.56.79" }
+    },
+    "alpha": ["common-server1"],
+    "beta": ["common-server2"],
+    "real": ["common-server2"]
+  }
+}
+```
+
 #### script filter
 - keyword : ssh
 - argument optional
