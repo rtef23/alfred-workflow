@@ -26,6 +26,10 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+src/ssh/servers.json
+
+node_modules
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
