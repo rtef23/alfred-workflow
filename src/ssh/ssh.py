@@ -3,7 +3,7 @@ import sys
 import subprocess
 
 # JSON 파일 경로
-JSON_FILE_PATH = "/Users/nhn/projects/alfred-workflow/src/ssh/servers.json"
+JSON_FILE_PATH = "$path_to_json"
 
 def load_data():
     """JSON 데이터를 로드하고 참조를 해석하여 반환"""
