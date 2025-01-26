@@ -219,14 +219,14 @@ print(json.dumps({"items": filtered_items}, ensure_ascii=False))
 - /bin/bash
 - with input as {query}
 ```zsh
-python3 /Users/nhn/projects/alfred-workflow/src/ssh/ssh.py ${path_to_json} list_groups {query}
+python3 ${path_to_python_code} ${path_to_json} list_groups {query}
 ```
 
 #### script filter
 - placeholder title : Select phase
 - /bin/zsh --no-rcs
 ```zsh
-python3 /Users/nhn/projects/alfred-workflow/src/ssh/ssh.py ${path_to_json} list_phases {query}
+python3 ${path_to_python_code} ${path_to_json} list_phases {query}
 
 ```
 
@@ -235,7 +235,7 @@ python3 /Users/nhn/projects/alfred-workflow/src/ssh/ssh.py ${path_to_json} list_
 - /bin/zsh --no-rcs
 
 ```zsh
-python3 /Users/nhn/projects/alfred-workflow/src/ssh/ssh.py ${path_to_json} list_servers {query}
+python3 ${path_to_python_code} ${path_to_json} list_servers {query}
 ```
 
 #### run script
@@ -243,7 +243,7 @@ python3 /Users/nhn/projects/alfred-workflow/src/ssh/ssh.py ${path_to_json} list_
 - with input as {query} 
 
 ```zsh
-python3 /Users/nhn/projects/alfred-workflow/src/ssh/ssh.py ${path_to_json} connect {query}
+python3 ${path_to_python_code} ${path_to_json} connect {query}
 ```
 
 </details>
