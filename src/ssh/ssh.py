@@ -77,8 +77,10 @@ def copy_ssh_command_to_clipboard(json_file_path, group_name, phase, server_name
         print(f"'{group_name}' 그룹에서 '{phase}' phase의 '{server_name}' 서버를 찾을 수 없습니다.")
         return
 
-    host = data[group_name][phase][server_name]['host']
-    ssh_command = f"ssh irteam@{host}"
+    server_info = data[group_name][phase][server_name]
+    user = server_info.get('user', 'irteam')
+    host = server_info['host']
+    ssh_command = f"ssh {user}@{host}"
 
     # osascript를 사용해 클립보드에 SSH 명령어 복사
     applescript = f'''
