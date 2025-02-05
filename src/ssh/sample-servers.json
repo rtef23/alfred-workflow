@@ -1,0 +1,14 @@
+{
+  "common_servers": {
+    "test-host-1": { "host": "test-host-1", "ip": "1.2.3.4", "user": "irteam" },
+    "test-host-2": { "host": "test-host-2", "ip": "1.2.3.4", "user": "irteam" },
+    "test-host-3": { "host": "test-host-3", "ip": "1.2.3.4", "user": "irteam" }
+  },
+  "hangame_gostop": {
+    "alpha": ["test-host-1"],
+    "beta": ["test-host-2"],
+    "real": {
+      "test-host-4": { "host": "test-host-4", "ip": "1.2.3.4", "user": "irteam" }
+    }
+  }
+}
