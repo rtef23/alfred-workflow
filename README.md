@@ -239,11 +239,29 @@ python3 ${path_to_python_code} ${path_to_json} list_servers {query}
 ```
 
 #### run script
-- /bin/bash
-- with input as {query} 
+- /usr/bin/python3
+- with input as argv 
 
 ```zsh
-python3 ${path_to_python_code} ${path_to_json} connect {query}
+import sys
+import subprocess
+
+script_path = "/path/to/python/script/ssh.py"
+json_path = "/path/to/server/json/servers.json"
+
+args = " ".join(sys.argv[1:])  # Alfred에서 전달된 {query}를 그대로 사용
+command = ["python3", script_path, json_path, "connect"] + args.split()
+
+result = subprocess.run(command, capture_output=True, text=True)
+print(result.stdout.strip())  # SSH 명령어 출력
+```
+
+### run script
+- /bin/zsh --no-rcs
+- with input as {query}
+
+```zsh
+printf "%s" "{query}" | pbcopy
 ```
 
 </details>
