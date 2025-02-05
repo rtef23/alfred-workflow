@@ -16,10 +16,8 @@ def load_data(json_file_path):
         resolved_data[group] = {}
         for phase, server_keys in phases.items():
             if isinstance(server_keys, dict):
-                # 'real' phase와 같이 개별 서버 정보가 직접 포함된 경우
                 resolved_data[group][phase] = server_keys
             else:
-                # 공통 서버 참조 방식
                 resolved_data[group][phase] = {
                     key: common_servers[key] for key in server_keys if key in common_servers
                 }
@@ -31,7 +29,6 @@ def list_groups(json_file_path, query=None):
     data = load_data(json_file_path)
     groups = list(data.keys())
 
-    # 키워드가 없는 경우, 최대 10개의 그룹만 반환
     if query is None:
         groups = groups[:10]
 
@@ -70,27 +67,23 @@ def list_servers(json_file_path, group_name, phase, query=None):
             })
     print(json.dumps({"items": results}, ensure_ascii=False, indent=2))
 
-def copy_ssh_command_to_clipboard(json_file_path, group_name, phase, server_name):
-    """선택한 그룹, phase, 서버의 SSH 명령어를 클립보드에 복사"""
+def get_ssh_command(json_file_path, group_name, phase, server_name):
+    """선택한 그룹, phase, 서버의 SSH 명령어를 반환"""
     data = load_data(json_file_path)
+
     if group_name not in data or phase not in data[group_name] or server_name not in data[group_name][phase]:
-        print(f"'{group_name}' 그룹에서 '{phase}' phase의 '{server_name}' 서버를 찾을 수 없습니다.")
+        print(json.dumps({"items": [{"title": f"'{group_name}' 그룹에서 '{phase}' phase의 '{server_name}' 서버를 찾을 수 없습니다.", "arg": ""}]}))
         return
 
     server_info = data[group_name][phase][server_name]
     user = server_info.get('user', 'irteam')
-    host = server_info['host']
+    host = server_info.get('host')
+
     ssh_command = f"ssh {user}@{host}"
 
-    # osascript를 사용해 클립보드에 SSH 명령어 복사
-    applescript = f'''
-    tell application "System Events"
-        set the clipboard to "{ssh_command}"
-    end tell
-    '''
-    subprocess.run(["osascript", "-e", applescript])
-
-    print(f"SSH 명령어가 클립보드에 복사되었습니다: {ssh_command}")
+    # Alfred가 올바른 데이터를 받도록 JSON 형식 유지
+    # print(json.dumps({"items": [{"title": f"Connect: {ssh_command}", "arg": ssh_command}]}))
+    print(ssh_command)
 
 def main():
     if len(sys.argv) < 3:
@@ -124,7 +117,7 @@ def main():
         group_name = sys.argv[3]
         phase = sys.argv[4]
         server_name = sys.argv[5]
-        copy_ssh_command_to_clipboard(json_file_path, group_name, phase, server_name)
+        get_ssh_command(json_file_path, group_name, phase, server_name)
     else:
         print(json.dumps({"items": [{"title": "알 수 없는 명령어입니다.", "arg": ""}]}))
 
